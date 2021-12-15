@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const gqlServer = require("./graphql/server");
 const { insertUser } = require("./hasura-services/user");
 
 // // Create and Deploy Your First Cloud Functions
@@ -10,6 +11,9 @@ const { insertUser } = require("./hasura-services/user");
 //   response.send("Hello from Firebase!");
 // });
 admin.initializeApp();
+
+const server = gqlServer();
+const api = functions.https.onRequest(server);
 
 const addUserToHasura = functions.auth.user().onCreate(async (user) => {
     const { uid } = user;
@@ -37,5 +41,6 @@ const addUserToHasura = functions.auth.user().onCreate(async (user) => {
 });
 
 module.exports = {
+    api,
     addUserToHasura,
 };
